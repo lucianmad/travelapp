@@ -22,6 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\TravelApp.BusinessLogic\TravelApp.BusinessLogic.csproj" />
       <ProjectReference Include="..\TravelApp.DataAccess\TravelApp.DataAccess.csproj" />
     </ItemGroup>
 

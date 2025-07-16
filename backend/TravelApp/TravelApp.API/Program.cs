@@ -1,5 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using TravelApp.API.Controllers;
+using TravelApp.BusinessLogic.Services.Abstractions;
+using TravelApp.BusinessLogic.Services.Concretes;
 using TravelApp.DataAccess;
+using TravelApp.DataAccess.Models;
+using TravelApp.DataAccess.Repositories.Abstractions;
+using TravelApp.DataAccess.Repositories.Concretes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddDbContext<TravelAppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TravelAppDB")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TravelAppDb")));
+
+builder.Services.AddScoped<IGenericRepository<Country>, GenericRepository<Country>>();
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
