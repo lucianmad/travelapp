@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelApp.API", "TravelApp.API\TravelApp.API.csproj", "{5B8EB2E0-60F7-4B39-8A18-A42C58359A81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelApp.DataAccess", "TravelApp.DataAccess\TravelApp.DataAccess.csproj", "{02CADEF3-7F1C-47AC-B9A7-DAACD0FAFB21}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B8EB2E0-60F7-4B39-8A18-A42C58359A81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B8EB2E0-60F7-4B39-8A18-A42C58359A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B8EB2E0-60F7-4B39-8A18-A42C58359A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B8EB2E0-60F7-4B39-8A18-A42C58359A81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02CADEF3-7F1C-47AC-B9A7-DAACD0FAFB21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02CADEF3-7F1C-47AC-B9A7-DAACD0FAFB21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02CADEF3-7F1C-47AC-B9A7-DAACD0FAFB21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02CADEF3-7F1C-47AC-B9A7-DAACD0FAFB21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
