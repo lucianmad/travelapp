@@ -1,4 +1,4 @@
-﻿namespace TravelApp.BusinessLogic.DTOs.Country;
+namespace TravelApp.BusinessLogic.DTOs.Country;
 
 public class CountryCreateDto
 {

@@ -1,15 +1,17 @@
-﻿using TravelApp.BusinessLogic.DTOs.Country;
+using TravelApp.BusinessLogic.DTOs.Country;
+using TravelApp.BusinessLogic.Exceptions;
 using TravelApp.BusinessLogic.Services.Abstractions;
 using TravelApp.DataAccess.Models;
 using TravelApp.DataAccess.Repositories.Abstractions;
+using TravelApp.BusinessLogic.Mappers;
 
 namespace TravelApp.BusinessLogic.Services.Concretes;
 
 public class CountryService : ICountryService
 {
-    private IGenericRepository<Country> _countryRepository;
+    private ICountryRepository _countryRepository;
 
-    public CountryService(IGenericRepository<Country> countryRepository)
+    public CountryService(ICountryRepository countryRepository)
     {
         _countryRepository = countryRepository;
     }
@@ -17,46 +19,49 @@ public class CountryService : ICountryService
     public async Task<IEnumerable<CountryGetDto>> GetAllCountriesAsync()
     {
         var countries = await _countryRepository.GetAllAsync();
-        return countries.Select(c => new CountryGetDto
-        {
-            Id = c.Id, 
-            Name = c.Name, 
-            Cities = c.Cities, 
-            Flag = c.Flag
-        });
+        return CountryMapper.MapToCountryGetDto(countries);
     }
 
-    public async Task<CountryGetDto> GetCountryByIdAsync(int id)
+    public async Task<CountryGetDto?> GetCountryByIdAsync(int id)
     {
         var country = await _countryRepository.GetByIdAsync(id);
         if (country == null)
         {
-            throw new ArgumentException($"Country with id {id} was not found");
+            throw new EntityNotFoundException("Country", id);
         }
-
-        return new CountryGetDto
-        {
-            Id = country.Id,
-            Name = country.Name,
-            Cities = country.Cities,
-            Flag = country.Flag
-        };
+        return CountryMapper.MapToCountryGetDto(country);
     }
 
     public async Task<CountryGetDto> CreateCountryAsync(CountryCreateDto countryCreateDto)
     {
-        var country = new Country
-        {
-            Name = countryCreateDto.Name,
-            Flag = countryCreateDto.Flag
-        };
+        var country = CountryMapper.MapToCountry(countryCreateDto);
         await _countryRepository.CreateAsync(country);
         
-        return new CountryGetDto
+        return CountryMapper.MapToCountryGetDto(country);
+    }
+
+    public async Task<CountryGetDto> UpdateCountryAsync(int id, CountryUpdateDto countryUpdateDto)
+    {
+        var country = await _countryRepository.GetByIdAsync(id);
+        if (country == null)
         {
-            Id = country.Id,
-            Name = country.Name,
-            Flag = country.Flag
-        };
+            throw new EntityNotFoundException("Country", id);       
+        }
+        
+        country.MapToCountry(countryUpdateDto);
+        
+        await _countryRepository.UpdateAsync(id, country);
+        return CountryMapper.MapToCountryGetDto(country);
+    }
+
+    public async Task DeleteCountryAsync(int id)
+    {
+        var country = await _countryRepository.GetByIdAsync(id);
+        if (country == null)
+        {
+            throw new EntityNotFoundException("Country", id);
+        }
+
+        await _countryRepository.DeleteAsync(id);
     }
 }

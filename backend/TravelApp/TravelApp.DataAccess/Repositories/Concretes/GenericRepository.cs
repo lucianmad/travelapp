@@ -29,9 +29,14 @@ public class GenericRepository<T> : IGenericRepository<T>  where T : class
         return entity;
     }
 
-    public async Task<T> UpdateAsync(T entity)
+    public async Task<T> UpdateAsync(int id, T entity)
     {
-        _context.Update(entity);
+        var entityToUpdate = await _context.Set<T>().FindAsync(id);
+        if (entityToUpdate == null)
+        {
+            return entity;
+        }
+        _context.Entry(entityToUpdate).CurrentValues.SetValues(entity);
         await _context.SaveChangesAsync();
         return entity;
     }
