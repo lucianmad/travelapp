@@ -1,6 +1,6 @@
-namespace TravelApp.BusinessLogic.Dtos.City;
+﻿namespace TravelApp.BusinessLogic.Dtos.City;
 
-public class CityCreateDto
+public class CityUpdateDto
 {
     public int CountryId { get; set; }
     public string Name { get; set; } = string.Empty;
