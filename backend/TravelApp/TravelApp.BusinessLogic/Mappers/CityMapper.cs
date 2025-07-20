@@ -17,7 +17,8 @@ public static class CityMapper
             Id = city.Id,
             Name = city.Name,
             Description = city.Description,
-            AttractionsNames = city.Attractions.Select(a => a.Name)
+            AttractionsNames = city.Attractions.Select(a => a.Name),
+            CountryName = city.Country.Name
         };
     }
 
@@ -27,7 +28,7 @@ public static class CityMapper
         {
             CountryId = cityCreateDto.CountryId,
             Name = cityCreateDto.Name,
-            Description = cityCreateDto.Description
+            Description = cityCreateDto.Description,
         };
     }
 

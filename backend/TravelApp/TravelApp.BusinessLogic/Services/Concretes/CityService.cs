@@ -8,7 +8,7 @@ namespace TravelApp.BusinessLogic.Services.Concretes;
 
 public class CityService : ICityService
 {
-    private ICityRepository _cityRepository;
+    private readonly ICityRepository _cityRepository;
 
     public CityService(ICityRepository cityRepository)
     {
@@ -27,12 +27,12 @@ public class CityService : ICityService
         return CityMapper.MapToCityGetDto(cities);
     }
 
-    public async Task<CityGetDto> GetCityByIdAsync(int cityId)
+    public async Task<CityGetDto> GetCityByIdAsync(int id)
     {
-        var city = await _cityRepository.GetByIdAsync(cityId);
+        var city = await _cityRepository.GetByIdAsync(id);
         if (city == null)
         {
-            throw new EntityNotFoundException("City", cityId);
+            throw new EntityNotFoundException("City", id);
         }
         return CityMapper.MapToCityGetDto(city);
     }
@@ -45,27 +45,27 @@ public class CityService : ICityService
         return CityMapper.MapToCityGetDto(city);
     }
 
-    public async Task<CityGetDto> UpdateCityAsync(int cityId, CityUpdateDto cityUpdateDto)
+    public async Task<CityGetDto> UpdateCityAsync(int id, CityUpdateDto cityUpdateDto)
     {
-        var city = await _cityRepository.GetByIdAsync(cityId);
+        var city = await _cityRepository.GetByIdAsync(id);
         if (city == null)
         {
-            throw new EntityNotFoundException("City", cityId);
+            throw new EntityNotFoundException("City", id);
         }
         city.MapToCity(cityUpdateDto);
-        await _cityRepository.UpdateAsync(cityId, city);
+        await _cityRepository.UpdateAsync(id, city);
         
         return CityMapper.MapToCityGetDto(city);
     }
 
-    public async Task DeleteCityAsync(int cityId)
+    public async Task DeleteCityAsync(int id)
     {
-        var city = await  _cityRepository.GetByIdAsync(cityId);
+        var city = await  _cityRepository.GetByIdAsync(id);
         if (city == null)
         {
-            throw new EntityNotFoundException("City", cityId);
+            throw new EntityNotFoundException("City", id);
         }
         
-        await _cityRepository.DeleteAsync(cityId);
+        await _cityRepository.DeleteAsync(id);
     }
 }

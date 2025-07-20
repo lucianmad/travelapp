@@ -17,7 +17,13 @@ builder.Services.AddDbContext<TravelAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TravelAppDb")));
 
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<IAttractionRepository, AttractionRepository>();
+
 builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<ICityService, CityService>();
+builder.Services.AddScoped<IAttractionService, AttractionService>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();

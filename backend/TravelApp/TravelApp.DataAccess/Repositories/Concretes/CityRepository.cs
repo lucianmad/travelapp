@@ -15,7 +15,10 @@ public class CityRepository : ICityRepository
 
     public async Task<IEnumerable<City>> GetAllAsync()
     {
-        return await _context.Set<City>().ToListAsync();
+        return await _context.Set<City>()
+            .Include(c => c.Country)
+            .Include(c => c.Attractions)
+            .ToListAsync();
     }
     
     public async Task<IEnumerable<City>> GetAllByCountryIdAsync(int countryId)

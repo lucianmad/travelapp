@@ -49,7 +49,7 @@ public class CountryController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public async Task DeleteCountry(int id)
+    public async Task DeleteCountry([FromRoute] int id)
     {
         await _countryService.DeleteCountryAsync(id);
     }

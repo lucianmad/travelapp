@@ -7,8 +7,8 @@ public interface ICityService
 {
     Task<IEnumerable<CityGetDto>> GetAllCitiesAsync();
     Task<IEnumerable<CityGetDto>> GetAllCitiesByCountryIdAsync(int countryId);
-    Task<CityGetDto> GetCityByIdAsync(int cityId);
+    Task<CityGetDto> GetCityByIdAsync(int id);
     Task<CityGetDto> CreateCityAsync(CityCreateDto cityCreateDto);
-    Task<CityGetDto> UpdateCityAsync(int cityId, CityUpdateDto cityUpdateDto);
-    Task DeleteCityAsync(int cityId);
+    Task<CityGetDto> UpdateCityAsync(int id, CityUpdateDto cityUpdateDto);
+    Task DeleteCityAsync(int id);
 }

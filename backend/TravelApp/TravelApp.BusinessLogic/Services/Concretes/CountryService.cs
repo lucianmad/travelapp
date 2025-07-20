@@ -9,7 +9,7 @@ namespace TravelApp.BusinessLogic.Services.Concretes;
 
 public class CountryService : ICountryService
 {
-    private ICountryRepository _countryRepository;
+    private readonly ICountryRepository _countryRepository;
 
     public CountryService(ICountryRepository countryRepository)
     {
