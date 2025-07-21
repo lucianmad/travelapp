@@ -11,7 +11,10 @@ public class AttractionConfiguration : IEntityTypeConfiguration<Attraction>
         builder.ToTable("Attractions");
         builder.HasKey(a => a.Id);
         
-        builder.Property(a => a.Name).IsRequired();
+        builder.Property(a => a.Name).IsRequired().HasMaxLength(50);
+        builder.Property(a => a.Description).HasMaxLength(250);
+        
+        builder.HasIndex(a => a.Name).IsUnique();
         
         builder.HasOne(a => a.City)
             .WithMany(c => c.Attractions)

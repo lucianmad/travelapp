@@ -9,4 +9,7 @@ public interface ICountryRepository
     Task<Country> CreateAsync(Country country);
     Task<Country> UpdateAsync(int id, Country country);
     Task DeleteAsync(int id);
+    Task<bool> ExistsByIdAsync(int id);
+    Task<bool> ExistsByNameAsync(string name);
+    Task<bool> ExistsByNameExcludingIdAsync(string name, int id);
 }

@@ -4,9 +4,11 @@ namespace TravelApp.DataAccess.Repositories.Abstractions;
 
 public interface IAttractionRepository
 {
-    Task<IEnumerable<Attraction>> GetAllAsync();
+    Task<IEnumerable<Attraction>> GetAllAsync(int? cityId = null, int? countryId = null, string? cityName = null, string? countryName = null);
     Task<Attraction?> GetByIdAsync(int id);
     Task<Attraction> CreateAsync(Attraction attraction);
     Task<Attraction> UpdateAsync(int id, Attraction attraction);
     Task DeleteAsync(int id);
+    Task<bool> ExistsByNameAsync(string name);
+    Task<bool> ExistsByNameExcludingIdAsync(string name, int id);
 }

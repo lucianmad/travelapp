@@ -12,6 +12,9 @@ public class CityConfiguration : IEntityTypeConfiguration<City>
         builder.HasKey(c => c.Id);
         
         builder.Property(c => c.Name).IsRequired().HasMaxLength(50);
+        builder.Property(c => c.Description).HasMaxLength(250);
+        
+        builder.HasIndex(c => c.Name).IsUnique();
         
         builder.HasOne(c => c.Country)
             .WithMany(c => c.Cities)

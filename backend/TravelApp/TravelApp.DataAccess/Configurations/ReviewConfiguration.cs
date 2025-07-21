@@ -11,9 +11,9 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.ToTable("Reviews");
         builder.HasKey(r => new {r.UserId, r.AttractionId});
         
-        builder.Property(r => r.Rating).IsRequired();
+        builder.Property(r => r.Rating).HasPrecision(2,1).IsRequired();
         builder.Property(r => r.Title).IsRequired().HasMaxLength(50);
-        builder.Property(r => r.Content).IsRequired();
+        builder.Property(r => r.Content).IsRequired().HasMaxLength(300);
         
         builder.HasOne(r => r.User)
             .WithMany(u => u.Reviews)

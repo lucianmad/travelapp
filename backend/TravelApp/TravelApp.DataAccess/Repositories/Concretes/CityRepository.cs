@@ -13,12 +13,24 @@ public class CityRepository : ICityRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<City>> GetAllAsync()
+    public async Task<IEnumerable<City>> GetAllAsync(string? countryName = null, int? countryId = null)
     {
-        return await _context.Set<City>()
+        var query = _context.Set<City>()
             .Include(c => c.Country)
             .Include(c => c.Attractions)
-            .ToListAsync();
+            .AsQueryable();
+        
+        if (!string.IsNullOrEmpty(countryName))
+        {
+            query = query.Where(c => c.Country.Name == countryName);
+        }
+        
+        if (countryId.HasValue)
+        {
+            query = query.Where(c => c.CountryId == countryId);
+        }
+        
+        return await query.ToListAsync();
     }
     
     public async Task<IEnumerable<City>> GetAllByCountryIdAsync(int countryId)
@@ -65,5 +77,20 @@ public class CityRepository : ICityRepository
         }
         _context.Set<City>().Remove(city);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsByIdAsync(int id)
+    {
+        return await _context.Set<City>().AnyAsync(c => c.Id == id);   
+    }
+
+    public async Task<bool> ExistsByNameAndCountryAsync(string name, int countryId)
+    {
+        return await _context.Set<City>().AnyAsync(c => c.Name.ToLower() == name.ToLower() && c.CountryId == countryId);;
+    }
+
+    public async Task<bool> ExistsByNameAndCountryExcludingIdAsync(string name, int id, int countryId)
+    {
+        return await _context.Set<City>().AnyAsync(c => c.Name.ToLower() == name.ToLower() && c.Id != id && c.CountryId == countryId);;
     }
 }

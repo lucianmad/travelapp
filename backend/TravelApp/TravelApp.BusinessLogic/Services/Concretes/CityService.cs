@@ -9,21 +9,33 @@ namespace TravelApp.BusinessLogic.Services.Concretes;
 public class CityService : ICityService
 {
     private readonly ICityRepository _cityRepository;
+    private readonly ICountryRepository _countryRepository;
 
-    public CityService(ICityRepository cityRepository)
+    public CityService(ICityRepository cityRepository, ICountryRepository countryRepository)
     {
         _cityRepository = cityRepository;
+        _countryRepository = countryRepository;
     }
     
-    public async Task<IEnumerable<CityGetDto>> GetAllCitiesAsync()
+    public async Task<IEnumerable<CityGetDto>> GetAllCitiesAsync(string? countryName = null, int? countryId = null)
     {
-        var cities = await _cityRepository.GetAllAsync();
-        return CityMapper.MapToCityGetDto(cities);
-    }
+        if (countryId.HasValue)
+        {
+            if(!await _countryRepository.ExistsByIdAsync(countryId.Value))
+            {
+                throw new InvalidFilterException("country Id", countryId.Value.ToString());
+            }
+        }
 
-    public async Task<IEnumerable<CityGetDto>> GetAllCitiesByCountryIdAsync(int countryId)
-    {
-        var cities = await _cityRepository.GetAllByCountryIdAsync(countryId);
+        if (!string.IsNullOrEmpty(countryName))
+        {
+            if(!await _countryRepository.ExistsByNameAsync(countryName))
+            {
+                throw new InvalidFilterException("country name", countryName);
+            }       
+        }
+        
+        var cities = await _cityRepository.GetAllAsync(countryName, countryId);
         return CityMapper.MapToCityGetDto(cities);
     }
 
@@ -39,6 +51,8 @@ public class CityService : ICityService
 
     public async Task<CityGetDto> CreateCityAsync(CityCreateDto cityCreateDto)
     {
+        await ValidateCountryExists(cityCreateDto.CountryId);
+        await ValidateUniqueCityNameInCountry(cityCreateDto.Name, cityCreateDto.CountryId);
         var city = CityMapper.MapToCity(cityCreateDto);
         await _cityRepository.CreateAsync(city);
         
@@ -52,6 +66,10 @@ public class CityService : ICityService
         {
             throw new EntityNotFoundException("City", id);
         }
+        
+        await ValidateCountryExists(cityUpdateDto.CountryId);
+        await ValidateUniqueCityNameInCountryExcludingId(cityUpdateDto.Name, id, cityUpdateDto.CountryId);
+        
         city.MapToCity(cityUpdateDto);
         await _cityRepository.UpdateAsync(id, city);
         
@@ -67,5 +85,29 @@ public class CityService : ICityService
         }
         
         await _cityRepository.DeleteAsync(id);
+    }
+
+    private async Task ValidateUniqueCityNameInCountry(string name, int countryId)
+    {
+        if (await _cityRepository.ExistsByNameAndCountryAsync(name, countryId))
+        {
+            throw new DuplicateEntityException("City", name);
+        }
+    }
+    
+    private async Task ValidateUniqueCityNameInCountryExcludingId(string name, int id, int countryId)
+    {
+        if (await _cityRepository.ExistsByNameAndCountryExcludingIdAsync(name, id, countryId))
+        {
+            throw new DuplicateEntityException("City", name);
+        }
+    }
+    
+    private async Task ValidateCountryExists(int countryId)
+    {
+        if (!await _countryRepository.ExistsByIdAsync(countryId))
+        {
+            throw new EntityNotFoundException("Country", countryId);
+        }
     }
 }

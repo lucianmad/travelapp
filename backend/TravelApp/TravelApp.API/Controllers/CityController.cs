@@ -16,9 +16,9 @@ public class CityController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] string? countryName = null, [FromQuery] int? countryId = null)
     {
-        var cities = await _cityService.GetAllCitiesAsync();
+        var cities = await _cityService.GetAllCitiesAsync(countryName, countryId);
         return Ok(cities);
     }
 

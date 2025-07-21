@@ -15,9 +15,9 @@ public class AttractionService : IAttractionService
         _attractionRepository = attractionRepository;
     }
     
-    public async Task<IEnumerable<AttractionGetDto>> GetAllAttractionsAsync()
+    public async Task<IEnumerable<AttractionGetDto>> GetAllAttractionsAsync(int? cityId = null, int? countryId = null, string? cityName = null, string? countryName = null)
     {
-        var attractions = await _attractionRepository.GetAllAsync();
+        var attractions = await _attractionRepository.GetAllAsync(cityId, countryId, cityName, countryName);
         return AttractionMapper.MapToAttractionGetDto(attractions);
     }
 
@@ -33,6 +33,7 @@ public class AttractionService : IAttractionService
 
     public async Task<AttractionGetDto> CreateAttractionAsync(AttractionCreateDto attractionCreateDto)
     {
+        await ValidateUniqueAttractionName(attractionCreateDto.Name);
         var attraction = AttractionMapper.MapToAttraction(attractionCreateDto);
         await _attractionRepository.CreateAsync(attraction);
         
@@ -46,6 +47,9 @@ public class AttractionService : IAttractionService
         {
             throw new EntityNotFoundException("Attraction", id);
         }
+        
+        await ValidateUniqueAttractionNameExcludingId(attractionUpdateDto.Name, id);
+        
         attraction.MapToAttraction(attractionUpdateDto);
         await _attractionRepository.UpdateAsync(id, attraction);
         
@@ -61,5 +65,21 @@ public class AttractionService : IAttractionService
         }
         
         await _attractionRepository.DeleteAsync(id);
+    }
+
+    private async Task ValidateUniqueAttractionName(string name)
+    {
+        if (await _attractionRepository.ExistsByNameAsync(name))
+        {
+            throw new DuplicateEntityException("Attraction", name);
+        }
+    }
+    
+    private async Task ValidateUniqueAttractionNameExcludingId(string name, int id)
+    {
+        if (await _attractionRepository.ExistsByNameExcludingIdAsync(name, id))
+        {
+            throw new DuplicateEntityException("Attraction", name);
+        }
     }
 }

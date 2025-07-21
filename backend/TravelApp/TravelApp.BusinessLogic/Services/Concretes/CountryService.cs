@@ -34,6 +34,7 @@ public class CountryService : ICountryService
 
     public async Task<CountryGetDto> CreateCountryAsync(CountryCreateDto countryCreateDto)
     {
+        await ValidateUniqueCountryName(countryCreateDto.Name);
         var country = CountryMapper.MapToCountry(countryCreateDto);
         await _countryRepository.CreateAsync(country);
         
@@ -48,9 +49,11 @@ public class CountryService : ICountryService
             throw new EntityNotFoundException("Country", id);       
         }
         
-        country.MapToCountry(countryUpdateDto);
+        await ValidateUniqueCountryNameExcludingId(countryUpdateDto.Name, id);
         
+        country.MapToCountry(countryUpdateDto);
         await _countryRepository.UpdateAsync(id, country);
+        
         return CountryMapper.MapToCountryGetDto(country);
     }
 
@@ -63,5 +66,21 @@ public class CountryService : ICountryService
         }
 
         await _countryRepository.DeleteAsync(id);
+    }
+
+    private async Task ValidateUniqueCountryName(string name)
+    {
+        if (await _countryRepository.ExistsByNameAsync(name))
+        {
+            throw new DuplicateEntityException("Country", name);
+        }
+    }
+    
+    private async Task ValidateUniqueCountryNameExcludingId(string name, int id)
+    {
+        if (await _countryRepository.ExistsByNameExcludingIdAsync(name, id))
+        {
+            throw new DuplicateEntityException("Country", name);
+        }
     }
 }

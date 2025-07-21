@@ -56,4 +56,19 @@ public class CountryRepository : ICountryRepository
         _context.Set<Country>().Remove(country);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> ExistsByIdAsync(int id)
+    {
+        return await _context.Set<Country>().AnyAsync(c => c.Id == id);  
+    }
+
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        return await _context.Set<Country>().AnyAsync(c => c.Name.ToLower() == name.ToLower());
+    }
+
+    public async Task<bool> ExistsByNameExcludingIdAsync(string name, int id)
+    {
+        return await _context.Set<Country>().AnyAsync(c => c.Name.ToLower() == name.ToLower() && c.Id != id);
+    }
 }

@@ -17,9 +17,9 @@ public class AttractionController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int? cityId = null, [FromQuery] int? countryId = null, [FromQuery] string? cityName = null, [FromQuery] string? countryName = null)
     {
-        var attractions = await _attractionService.GetAllAttractionsAsync();
+        var attractions = await _attractionService.GetAllAttractionsAsync(cityId, countryId, cityName, countryName);
         return Ok(attractions);
     }
     

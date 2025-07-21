@@ -13,12 +13,34 @@ public class AttractionRepository : IAttractionRepository
         _context = context;
     }
     
-    public async Task<IEnumerable<Attraction>> GetAllAsync()
+    public async Task<IEnumerable<Attraction>> GetAllAsync(int? cityId = null, int? countryId = null, string? cityName = null, string? countryName = null)
     {
-        return await _context.Set<Attraction>()
+        var query = _context.Set<Attraction>()
             .Include(a => a.City)
                 .ThenInclude(c => c.Country)
-            .ToListAsync();
+            .AsQueryable();
+        
+        if (cityId.HasValue)
+        {
+            query = query.Where(a => a.CityId == cityId);
+        }
+        
+        if (countryId.HasValue)
+        {
+            query = query.Where(a => a.City.CountryId == countryId);
+        }
+
+        if (!string.IsNullOrEmpty(cityName))
+        {
+            query = query.Where(a => a.City.Name == cityName);
+        }
+        
+        if (!string.IsNullOrEmpty(countryName))
+        {
+            query = query.Where(a => a.City.Country.Name == countryName);
+        }
+        
+        return await query.ToListAsync();
     }
 
     public async Task<Attraction?> GetByIdAsync(int id)
@@ -58,5 +80,15 @@ public class AttractionRepository : IAttractionRepository
         }
         _context.Set<Attraction>().Remove(attraction);
         await _context.SaveChangesAsync();
+    }
+    
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        return await _context.Set<Attraction>().AnyAsync(a => a.Name.ToLower() == name.ToLower());
+    }
+
+    public async Task<bool> ExistsByNameExcludingIdAsync(string name, int id)
+    {
+        return await _context.Set<Attraction>().AnyAsync(a => a.Name.ToLower() == name.ToLower() && a.Id != id);
     }
 }
