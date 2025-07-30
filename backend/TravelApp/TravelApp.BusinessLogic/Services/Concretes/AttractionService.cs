@@ -9,14 +9,50 @@ namespace TravelApp.BusinessLogic.Services.Concretes;
 public class AttractionService : IAttractionService
 {
     private readonly IAttractionRepository _attractionRepository;
+    private readonly ICityRepository _cityRepository;
+    private readonly ICountryRepository _countryRepository;
 
-    public AttractionService(IAttractionRepository attractionRepository)
+    public AttractionService(IAttractionRepository attractionRepository, ICityRepository cityRepository, ICountryRepository countryRepository)
     {
         _attractionRepository = attractionRepository;
+        _cityRepository = cityRepository;
+        _countryRepository = countryRepository;
     }
     
     public async Task<IEnumerable<AttractionGetDto>> GetAllAttractionsAsync(int? cityId = null, int? countryId = null, string? cityName = null, string? countryName = null)
     {
+        if (cityId.HasValue)
+        {
+            if(!await _cityRepository.ExistsByIdAsync(cityId.Value))
+            {
+                throw new InvalidFilterException("city Id", cityId.Value.ToString());
+            }
+        }
+
+        if (!string.IsNullOrEmpty(cityName))
+        {
+            if(!await _cityRepository.ExistsByNameAsync(cityName))
+            {
+                throw new InvalidFilterException("city name", cityName);
+            }       
+        }
+        
+        if (countryId.HasValue)
+        {
+            if (!await _countryRepository.ExistsByIdAsync(countryId.Value))
+            {
+                throw new InvalidFilterException("country Id", countryId.Value.ToString());
+            }
+        }
+
+        if (!string.IsNullOrEmpty(countryName))
+        {
+            if(!await _countryRepository.ExistsByNameAsync(countryName))
+            {
+                throw new InvalidFilterException("country name", countryName);
+            }      
+        }
+        
         var attractions = await _attractionRepository.GetAllAsync(cityId, countryId, cityName, countryName);
         return AttractionMapper.MapToAttractionGetDto(attractions);
     }
@@ -33,7 +69,8 @@ public class AttractionService : IAttractionService
 
     public async Task<AttractionGetDto> CreateAttractionAsync(AttractionCreateDto attractionCreateDto)
     {
-        await ValidateUniqueAttractionName(attractionCreateDto.Name);
+        await ValidateCityExists(attractionCreateDto.CityId);
+        await ValidateUniqueAttractionNameInCity(attractionCreateDto.Name, attractionCreateDto.CityId);
         var attraction = AttractionMapper.MapToAttraction(attractionCreateDto);
         await _attractionRepository.CreateAsync(attraction);
         
@@ -48,7 +85,8 @@ public class AttractionService : IAttractionService
             throw new EntityNotFoundException("Attraction", id);
         }
         
-        await ValidateUniqueAttractionNameExcludingId(attractionUpdateDto.Name, id);
+        await ValidateCityExists(attractionUpdateDto.CityId);
+        await ValidateUniqueAttractionNameInCityExcludingId(attractionUpdateDto.Name, id, attractionUpdateDto.CityId);
         
         attraction.MapToAttraction(attractionUpdateDto);
         await _attractionRepository.UpdateAsync(id, attraction);
@@ -67,19 +105,27 @@ public class AttractionService : IAttractionService
         await _attractionRepository.DeleteAsync(id);
     }
 
-    private async Task ValidateUniqueAttractionName(string name)
+    private async Task ValidateUniqueAttractionNameInCity(string name, int cityId)
     {
-        if (await _attractionRepository.ExistsByNameAsync(name))
+        if (await _attractionRepository.ExistsByNameAndCityAsync(name, cityId))
         {
             throw new DuplicateEntityException("Attraction", name);
         }
     }
     
-    private async Task ValidateUniqueAttractionNameExcludingId(string name, int id)
+    private async Task ValidateUniqueAttractionNameInCityExcludingId(string name, int id, int cityId)
     {
-        if (await _attractionRepository.ExistsByNameExcludingIdAsync(name, id))
+        if (await _attractionRepository.ExistsByNameAndCityExcludingIdAsync(name, id, cityId))
         {
             throw new DuplicateEntityException("Attraction", name);
+        }
+    }
+    
+    private async Task ValidateCityExists(int cityId)
+    {
+        if (!await _cityRepository.ExistsByIdAsync(cityId))
+        {
+            throw new EntityNotFoundException("City", cityId);
         }
     }
 }

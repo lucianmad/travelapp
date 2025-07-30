@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravelApp.BusinessLogic.Dtos.Attraction;
 using TravelApp.BusinessLogic.Services.Abstractions;
-using TravelApp.DataAccess.Repositories.Abstractions;
 
 namespace TravelApp.API.Controllers;
 
@@ -45,8 +44,9 @@ public class AttractionController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public async Task DeleteAttraction([FromRoute] int id)
+    public async Task<IActionResult> DeleteAttraction([FromRoute] int id)
     {
         await _attractionService.DeleteAttractionAsync(id);
+        return NoContent();
     }
 }

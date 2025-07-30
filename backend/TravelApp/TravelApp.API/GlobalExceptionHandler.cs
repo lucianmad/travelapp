@@ -49,6 +49,18 @@ public class GlobalExceptionHandler
                 Message = "Invalid filter",
                 Details = ex.Message
             },
+            UserAlreadyExistsException ex => new ErrorResponse
+            {
+                StatusCode = StatusCodes.Status409Conflict,
+                Message = "User already exists",
+                Details = ex.Message
+            },
+            InvalidCredentialsException ex => new ErrorResponse
+            {
+                StatusCode = StatusCodes.Status401Unauthorized,
+                Message = "Invalid credentials",
+                Details = ex.Message
+            },
             _ => new ErrorResponse
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
@@ -59,11 +71,11 @@ public class GlobalExceptionHandler
         
         if (response.StatusCode >= 500)
         {
-            _logger.LogError(exception, "Server error occurred: {Message}", exception.Message);
+            _logger.LogError(exception, $"Server error occurred: {exception.Message}");
         }
         else
         {
-            _logger.LogWarning(exception, "Client error occurred: {Message}", exception.Message);
+            _logger.LogWarning(exception, $"Client error occurred: {exception.Message}");
         }
 
         context.Response.StatusCode = response.StatusCode;

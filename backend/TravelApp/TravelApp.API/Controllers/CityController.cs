@@ -44,8 +44,9 @@ public class CityController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task DeleteCity([FromRoute] int id)
+    public async Task<IActionResult> DeleteCity([FromRoute] int id)
     {
         await _cityService.DeleteCityAsync(id);
+        return NoContent();
     }
 }

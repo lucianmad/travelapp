@@ -91,4 +91,14 @@ public class AttractionRepository : IAttractionRepository
     {
         return await _context.Set<Attraction>().AnyAsync(a => a.Name.ToLower() == name.ToLower() && a.Id != id);
     }
+
+    public async Task<bool> ExistsByNameAndCityAsync(string name, int cityId)
+    {
+        return await _context.Set<Attraction>().AnyAsync(a => a.Name.ToLower() == name.ToLower() && a.CityId == cityId);
+    }
+    
+    public async Task<bool> ExistsByNameAndCityExcludingIdAsync(string name, int id, int cityId)
+    {
+        return await _context.Set<Attraction>().AnyAsync(a => a.Name.ToLower() == name.ToLower() && a.Id != id && a.CityId == cityId);
+    }
 }

@@ -11,6 +11,7 @@ public interface ICityRepository
     Task<City> UpdateAsync(int id, City city);
     Task DeleteAsync(int id);
     Task<bool> ExistsByIdAsync(int id);
+    Task<bool> ExistsByNameAsync(string name);
     Task<bool> ExistsByNameAndCountryAsync(string name, int countryId);
     Task<bool> ExistsByNameAndCountryExcludingIdAsync(string name, int id, int countryId);
 }

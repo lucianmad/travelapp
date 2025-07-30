@@ -9,6 +9,6 @@ public interface IAttractionRepository
     Task<Attraction> CreateAsync(Attraction attraction);
     Task<Attraction> UpdateAsync(int id, Attraction attraction);
     Task DeleteAsync(int id);
-    Task<bool> ExistsByNameAsync(string name);
-    Task<bool> ExistsByNameExcludingIdAsync(string name, int id);
+    Task<bool> ExistsByNameAndCityAsync(string name, int cityId);
+    Task<bool> ExistsByNameAndCityExcludingIdAsync(string name, int id, int cityId);
 }

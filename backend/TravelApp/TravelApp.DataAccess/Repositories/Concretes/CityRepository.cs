@@ -84,6 +84,11 @@ public class CityRepository : ICityRepository
         return await _context.Set<City>().AnyAsync(c => c.Id == id);   
     }
 
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        return await _context.Set<City>().AnyAsync(c => c.Name.ToLower() == name.ToLower());
+    }
+    
     public async Task<bool> ExistsByNameAndCountryAsync(string name, int countryId)
     {
         return await _context.Set<City>().AnyAsync(c => c.Name.ToLower() == name.ToLower() && c.CountryId == countryId);;

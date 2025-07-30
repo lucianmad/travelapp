@@ -16,6 +16,7 @@ public class CountryController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<CountryGetDto>),StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var countries = await _countryService.GetAllCountriesAsync();
@@ -23,6 +24,8 @@ public class CountryController : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(CountryGetDto),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var country = await _countryService.GetCountryByIdAsync(id);
@@ -34,6 +37,9 @@ public class CountryController : ControllerBase
     }
     
     [HttpPost]
+    [ProducesResponseType(typeof(CountryGetDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> CreateCountry([FromBody] CountryCreateDto countryCreateDto)
     {
         var country = await _countryService.CreateCountryAsync(countryCreateDto);
@@ -42,6 +48,10 @@ public class CountryController : ControllerBase
     
     [HttpPut]
     [Route("{id}")]
+    [ProducesResponseType(typeof(CountryGetDto),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateCountry([FromRoute] int id, [FromBody] CountryUpdateDto countryUpdateDto)
     {
         var country = await _countryService.UpdateCountryAsync(id, countryUpdateDto);
@@ -49,8 +59,11 @@ public class CountryController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public async Task DeleteCountry([FromRoute] int id)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteCountry([FromRoute] int id)
     {
         await _countryService.DeleteCountryAsync(id);
+        return NoContent();
     }
 }
